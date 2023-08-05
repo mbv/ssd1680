@@ -1,0 +1,26 @@
+[package]
+name = "ssd1680"
+version = "0.1.0"
+authors = ["Konstantin Terekhov <c@kmbv.info>"]
+description = "Driver for the SSD1680 e-Paper display (EPD) controller, for use with embedded-hal"
+edition = "2018"
+
+documentation = "https://docs.rs/ssd1680"
+repository = "https://github.com/mbv/ssd1680"
+
+readme = "README.md"
+keywords = ["embedded-hal-driver", "epd", "epaper", "driver", "ssd1680"]
+categories = ["embedded", "no-std"]
+
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+embedded-hal = { version = "0.2.3", features = ["unproven"] }
+embedded-graphics = { version = "0.6.2", optional = true }
+
+[features]
+default = ["graphics"]
+graphics = ["embedded-graphics"]
+
+[profile.release]
+lto = true

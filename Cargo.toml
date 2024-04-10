@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["Konstantin Terekhov <c@kmbv.info>"]
 description = "Driver for the SSD1680 e-Paper display (EPD) controller, for use with embedded-hal"
 edition = "2021"
-rust-version = "1.75"
 
 documentation = "https://docs.rs/ssd1680"
 repository = "https://github.com/mbv/ssd1680"

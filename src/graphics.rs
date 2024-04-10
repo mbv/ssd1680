@@ -149,7 +149,15 @@ impl DrawTarget for Display2in13 {
 
 impl OriginDimensions for Display2in13 {
     fn size(&self) -> Size {
-        Size::new(WIDTH.into(), HEIGHT.into())
+        //if display is rotated 90 deg or 270 then swap height and width
+        match self.rotation() {
+            DisplayRotation::Rotate0 | DisplayRotation::Rotate180 => {
+                Size::new(WIDTH.into(), HEIGHT.into())
+            }
+            DisplayRotation::Rotate90 | DisplayRotation::Rotate270 => {
+                Size::new(HEIGHT.into(), WIDTH.into())
+            }
+        }
     }
 }
 

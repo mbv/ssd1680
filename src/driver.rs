@@ -1,5 +1,6 @@
 //! Driver for interacting with SSD1680 display driver
-use display_interface::DisplayError;
+pub use display_interface::DisplayError;
+
 use embedded_hal::delay::DelayNs;
 use embedded_hal::digital::{InputPin, OutputPin};
 use embedded_hal::spi::SpiDevice;

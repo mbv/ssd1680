@@ -8,22 +8,23 @@ use crate::interface::DisplayInterface;
 use crate::{cmd, color, flag, HEIGHT, WIDTH};
 
 /// A configured display with a hardware interface.
-pub struct Ssd1680<SPI, OP, IP> {
-    interface: DisplayInterface<SPI, OP, IP>,
+pub struct Ssd1680<SPI, BSY, RST, DC> {
+    interface: DisplayInterface<SPI, BSY, RST, DC>,
 }
 
-impl<SPI, OP, IP> Ssd1680<SPI, OP, IP>
+impl<SPI, BSY, DC, RST> Ssd1680<SPI, BSY, DC, RST>
 where
     SPI: SpiDevice,
-    OP: OutputPin,
-    IP: InputPin,
+    RST: OutputPin,
+    DC: OutputPin,
+    BSY: InputPin,
 {
     /// Create and initialize the display driver
     pub fn new(
         spi: SPI,
-        busy: IP,
-        dc: OP,
-        rst: OP,
+        busy: BSY,
+        dc: DC,
+        rst: RST,
         delay: &mut impl DelayNs,
     ) -> Result<Self, DisplayError>
     where

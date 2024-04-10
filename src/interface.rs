@@ -10,29 +10,30 @@ const RESET_DELAY_MS: u8 = 10;
 
 /// The Connection Interface of all (?) Waveshare EPD-Devices
 ///
-pub(crate) struct DisplayInterface<SPI, OP, IP> {
+pub(crate) struct DisplayInterface<SPI, BSY, DC, RST> {
     /// SPI device
     spi: SPI,
     /// Low for busy, Wait until display is ready!
-    busy: IP,
+    busy: BSY,
     /// Data/Command Control Pin (High for data, Low for command)
-    dc: OP,
+    dc: DC,
     /// Pin for Reseting
-    rst: OP,
+    rst: RST,
 }
 
-impl<SPI, OP, IP> DisplayInterface<SPI, OP, IP> {
+impl<SPI, BSY, DC, RST> DisplayInterface<SPI, BSY, DC, RST> {
     /// Create and initialize display
-    pub fn new(spi: SPI, busy: IP, dc: OP, rst: OP) -> Self {
+    pub fn new(spi: SPI, busy: BSY, dc: DC, rst: RST) -> Self {
         DisplayInterface { spi, busy, dc, rst }
     }
 }
 
-impl<SPI, OP, IP> DisplayInterface<SPI, OP, IP>
+impl<SPI, BSY, DC, RST> DisplayInterface<SPI, BSY, DC, RST>
 where
     SPI: SpiDevice,
-    OP: OutputPin,
-    IP: InputPin,
+    RST: OutputPin,
+    DC: OutputPin,
+    BSY: InputPin,
 {
     /// Basic function for sending commands
     pub(crate) fn cmd(&mut self, command: u8) -> Result<(), DisplayError> {

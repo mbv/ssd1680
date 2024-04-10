@@ -242,7 +242,7 @@ mod tests {
     use super::{find_position, outside_display, Display, Display2in13, DisplayRotation};
     use crate::color::Black;
     use crate::color::Color;
-    use embedded_graphics::{prelude::*, primitives::Line, style::PrimitiveStyle};
+    use embedded_graphics::{prelude::*, primitives::Line, primitives::PrimitiveStyle};
 
     #[test]
     fn buffer_clear() {

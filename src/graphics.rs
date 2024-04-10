@@ -83,7 +83,7 @@ pub trait Display: DrawTarget {
 
         // "Draw" the Pixel on that bit
         match color {
-            // Black/Red
+            // White/Red
             BinaryColor::On => {
                 if is_inverted {
                     buffer[index] &= !bit;
@@ -91,7 +91,7 @@ pub trait Display: DrawTarget {
                     buffer[index] |= bit;
                 }
             }
-            // White
+            //Black
             BinaryColor::Off => {
                 if is_inverted {
                     buffer[index] |= bit;
@@ -117,7 +117,7 @@ impl Display2in13 {
         Display2in13 {
             buffer: [Color::White.get_byte_value(); buffer_len(WIDTH as usize, HEIGHT as usize)],
             rotation: DisplayRotation::default(),
-            is_inverted: true,
+            is_inverted: false,
         }
     }
 
@@ -260,7 +260,7 @@ mod tests {
             assert_eq!(byte, Color::White.get_byte_value());
         }
 
-        display.clear_buffer(Color::White);
+        display.clear_buffer(Color::Black);
 
         for &byte in display.buffer.iter() {
             assert_eq!(byte, Color::Black.get_byte_value());

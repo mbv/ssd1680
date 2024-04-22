@@ -4,9 +4,9 @@
 use embedded_graphics::pixelcolor::BinaryColor;
 
 #[cfg(feature = "graphics")]
-pub use BinaryColor::Off as White;
+pub use BinaryColor::Off as Black;
 #[cfg(feature = "graphics")]
-pub use BinaryColor::On as Black;
+pub use BinaryColor::On as White;
 #[cfg(feature = "graphics")]
 pub use BinaryColor::On as Red;
 

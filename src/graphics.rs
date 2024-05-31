@@ -2,6 +2,7 @@
 
 use crate::color::Color;
 use crate::{HEIGHT, WIDTH};
+use display_interface::DisplayError;
 use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 
 /// Displayrotation
@@ -29,7 +30,7 @@ impl Default for DisplayRotation {
 /// - Drawing (With the help of DrawTarget/Embedded Graphics)
 /// - Rotations
 /// - Clearing
-pub trait Display: DrawTarget<BinaryColor> {
+pub trait Display: DrawTarget {
     /// Clears the buffer of the display with the chosen background color
     fn clear_buffer(&mut self, background_color: Color) {
         let fill_color = if self.is_inverted() {
@@ -82,7 +83,7 @@ pub trait Display: DrawTarget<BinaryColor> {
 
         // "Draw" the Pixel on that bit
         match color {
-            // Black/Red
+            // White/Red
             BinaryColor::On => {
                 if is_inverted {
                     buffer[index] &= !bit;
@@ -90,7 +91,7 @@ pub trait Display: DrawTarget<BinaryColor> {
                     buffer[index] |= bit;
                 }
             }
-            // White
+            //Black
             BinaryColor::Off => {
                 if is_inverted {
                     buffer[index] |= bit;
@@ -105,7 +106,7 @@ pub trait Display: DrawTarget<BinaryColor> {
 
 /// Display for a 122x250 panel
 pub struct Display2in13 {
-    buffer: [u8;  buffer_len(WIDTH as usize, HEIGHT as usize)],
+    buffer: [u8; buffer_len(WIDTH as usize, HEIGHT as usize)],
     rotation: DisplayRotation,
     is_inverted: bool,
 }
@@ -116,7 +117,7 @@ impl Display2in13 {
         Display2in13 {
             buffer: [Color::White.get_byte_value(); buffer_len(WIDTH as usize, HEIGHT as usize)],
             rotation: DisplayRotation::default(),
-            is_inverted: true,
+            is_inverted: false,
         }
     }
 
@@ -131,15 +132,32 @@ impl Display2in13 {
     }
 }
 
-impl DrawTarget<BinaryColor> for Display2in13 {
-    type Error = core::convert::Infallible;
+impl DrawTarget for Display2in13 {
+    type Error = DisplayError;
+    type Color = BinaryColor;
 
-    fn draw_pixel(&mut self, pixel: Pixel<BinaryColor>) -> Result<(), Self::Error> {
-        self.draw_helper(u32::from(WIDTH), u32::from(HEIGHT), pixel)
+    fn draw_iter<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+    where
+        I: IntoIterator<Item = Pixel<Self::Color>>,
+    {
+        for p in pixels.into_iter() {
+            self.draw_helper(WIDTH.into(), HEIGHT.into(), p)?;
+        }
+        Ok(())
     }
+}
 
+impl OriginDimensions for Display2in13 {
     fn size(&self) -> Size {
-        Size::new(u32::from(WIDTH), u32::from(HEIGHT))
+        //if display is rotated 90 deg or 270 then swap height and width
+        match self.rotation() {
+            DisplayRotation::Rotate0 | DisplayRotation::Rotate180 => {
+                Size::new(WIDTH.into(), HEIGHT.into())
+            }
+            DisplayRotation::Rotate90 | DisplayRotation::Rotate270 => {
+                Size::new(HEIGHT.into(), WIDTH.into())
+            }
+        }
     }
 }
 
@@ -232,7 +250,7 @@ mod tests {
     use super::{find_position, outside_display, Display, Display2in13, DisplayRotation};
     use crate::color::Black;
     use crate::color::Color;
-    use embedded_graphics::{prelude::*, primitives::Line, style::PrimitiveStyle};
+    use embedded_graphics::{prelude::*, primitives::Line, primitives::PrimitiveStyle};
 
     #[test]
     fn buffer_clear() {
@@ -242,7 +260,7 @@ mod tests {
             assert_eq!(byte, Color::White.get_byte_value());
         }
 
-        display.clear_buffer(Color::White);
+        display.clear_buffer(Color::Black);
 
         for &byte in display.buffer.iter() {
             assert_eq!(byte, Color::Black.get_byte_value());
